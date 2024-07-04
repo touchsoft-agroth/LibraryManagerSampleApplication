@@ -7,6 +7,10 @@ and allows users to borrow and return books that is currently in the library. Th
 ## Dependencies
 * .NET 8.0
 
+## Other information
+You are free to use any tools, libraries or other resources for the tasks. There are no limitations or restrictions on technologies, patterns or implementation. After submission, you are expected to
+talk about and discuss your code and choices.
+
 ## Tasks
 ### Improve the search functionality
 * Currently a search on books by their titles is performed each time the search text box changes. Instead, we would like to only perform the search once
