@@ -1,5 +1,6 @@
 ﻿using LibraryManager.Data.Models;
 using LibraryManager.GUI.Dialogs;
+using LibraryManager.GUI.Dialogs.Borrowing;
 using LibraryManager.GUI.Views;
 using LibraryManager.Service.Services;
 
@@ -10,34 +11,38 @@ public partial class LibraryManagementGui : Form
     private readonly BookService _bookService;
     private readonly BorrowingService _borrowingService;
     private readonly UserService _userService;
+    private readonly BookSearchService _bookSearchService;
 
-    public LibraryManagementGui(BookService bookService, BorrowingService borrowingService, UserService userService)
+    public LibraryManagementGui(BookService bookService, BorrowingService borrowingService, UserService userService, BookSearchService bookSearchService)
     {
         _bookService = bookService;
         _borrowingService = borrowingService;
         _userService = userService;
+        _bookSearchService = bookSearchService;
 
         InitializeComponent();
     }
 
     private void RootForm_Load(object sender, EventArgs e)
     {
-        PopulateBookList(_ => true);
+        LoadAllBooks();
     }
 
-    private void PopulateBookList(Predicate<Book> filter)
+    private void LoadAllBooks()
     {
-        bookListBox.DataSource = _bookService.GetAll()
-            .Where(book => filter(book))
-            .Select(book => new BookView(book))
-            .ToList();
+        SetBookList(_bookService.GetAll());
+    }
+
+    private void SetBookList(IEnumerable<Book> books)
+    {
+        bookListBox.DataSource = books.Select(book => new BookView(book)).ToList();
     }
 
     private void bookListBox_SelectedIndexChanged(object sender, EventArgs e)
     {
         if (TryGetSelectedBook(out var selectedBook))
         {
-            SetBookForEdit(selectedBook.Book);
+            SetBookForEdit(selectedBook);
         }
     }
 
@@ -70,21 +75,20 @@ public partial class LibraryManagementGui : Form
     {
         if (TryGetSelectedBook(out var selectedBook))
         {
-            var bookModel = selectedBook.Book;
-            bookModel.Title = bookEditTitleTextBox.Text;
-            bookModel.Author = bookEditAuthorTextBox.Text;
+            selectedBook.Title = bookEditTitleTextBox.Text;
+            selectedBook.Author = bookEditAuthorTextBox.Text;
 
-            PopulateBookList(_ => true);
+            LoadAllBooks();
         }
     }
 
-    private bool TryGetSelectedBook(out BookView bookView)
+    private bool TryGetSelectedBook(out Book book)
     {
-        bookView = null;
+        book = null;
 
         if (bookListBox.SelectedItem is BookView selectedBookView)
         {
-            bookView = selectedBookView;
+            book = selectedBookView.Book;
             return true;
         }
 
@@ -95,11 +99,9 @@ public partial class LibraryManagementGui : Form
     {
         if (TryGetSelectedBook(out var selectedBook))
         {
-            var bookModel = selectedBook.Book;
+            new BorrowBookDialog(selectedBook, _userService, _borrowingService).ShowDialog();
 
-            new BorrowBookDialog(bookModel, _userService, _borrowingService).ShowDialog();
-
-            SetBookForEdit(bookModel);
+            SetBookForEdit(selectedBook);
         }
     }
 
@@ -107,26 +109,23 @@ public partial class LibraryManagementGui : Form
     {
         if (TryGetSelectedBook(out var selectedBook))
         {
-            var bookModel = selectedBook.Book;
+            if (!_borrowingService.IsBorrowed(selectedBook.Id))
+            {
+                return;
+            }
 
-            _borrowingService.Return(bookModel.Id);
+            _borrowingService.Return(selectedBook.Id);
 
-            SetBookForEdit(bookModel);
+            SetBookForEdit(selectedBook);
         }
     }
 
     private void bookTitleSearchTextBox_TextChanged(object sender, EventArgs e)
     {
-        var searchText = bookTitleSearchTextBox.Text;
+        var searchTerm = bookTitleSearchTextBox.Text;
 
-        if (string.IsNullOrWhiteSpace(searchText))
-        {
-            PopulateBookList(_ => true);
-        }
+        var searchResult = _bookSearchService.Search(searchTerm);
 
-        else
-        {
-            PopulateBookList(book => book.Title.Contains(searchText));
-        }
+        SetBookList(searchResult);
     }
 }

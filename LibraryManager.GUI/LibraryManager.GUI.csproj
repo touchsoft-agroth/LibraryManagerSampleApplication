@@ -27,6 +27,9 @@
       <Compile Update="BookList\BookEntryEdit.cs">
         <SubType>Form</SubType>
       </Compile>
+      <Compile Update="Dialogs\Borrowing\BorrowBookDialog.cs">
+        <SubType>Form</SubType>
+      </Compile>
     </ItemGroup>
 
 </Project>

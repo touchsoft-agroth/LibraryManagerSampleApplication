@@ -28,8 +28,10 @@ internal static class Program
         var userRepository = new UserRepository(dataContext);
         var userService = new UserService(userRepository);
         
+        var bookSearchService = new BookSearchService(bookService);
+        
         LoadMockData(bookRepository, userRepository);
-        Application.Run(new LibraryManagementGui(bookService, borrowingService, userService));
+        Application.Run(new LibraryManagementGui(bookService, borrowingService, userService, bookSearchService));
     }
 
     /// <summary>

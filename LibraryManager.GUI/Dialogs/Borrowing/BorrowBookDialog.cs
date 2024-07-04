@@ -1,17 +1,7 @@
 ﻿using LibraryManager.Data.Models;
 using LibraryManager.Service.Services;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
-namespace LibraryManager.GUI.Dialogs
+namespace LibraryManager.GUI.Dialogs.Borrowing
 {
     public partial class BorrowBookDialog : Form
     {
@@ -34,13 +24,38 @@ namespace LibraryManager.GUI.Dialogs
 
             borrowerDropdown.DataSource = _userService.GetAll().Select(user => user.Id).ToList();
 
-            DateTime today = DateTime.Today;
-            fromDatePicker.MinDate = today;
-
-            toDatePicker.MinDate = today.AddDays(1);
-            toDatePicker.MaxDate = today.AddDays(7);
-
+            SetAllowedFromDate();
             OnAnyValueChanged();
+        }
+
+        private void SetAllowedFromDate()
+        {
+            var today = DateTime.Today;
+            
+            fromDatePicker.MinDate = today;
+            UpdateToDateRange(today);
+        }
+
+        private void UpdateToDateRange(DateTime fromDate)
+        {
+            const int minBorrowDays = 1;
+            const int maxBorrowDays = 7;
+            
+            var minDate = fromDate.AddDays(minBorrowDays);
+            var maxDate = fromDate.AddDays(maxBorrowDays);
+            
+            if (toDatePicker.Value < minDate)
+            {
+                toDatePicker.Value = minDate;
+            }
+
+            if (toDatePicker.Value > maxDate)
+            {
+                toDatePicker.Value = maxDate;
+            }
+
+            toDatePicker.MinDate = minDate;
+            toDatePicker.MaxDate = maxDate;
         }
 
         private void borrowerDropdown_SelectionChangeCommitted(object sender, EventArgs e)
@@ -51,6 +66,9 @@ namespace LibraryManager.GUI.Dialogs
         private void fromDatePicker_ValueChanged(object sender, EventArgs e)
         {
             OnAnyValueChanged();
+
+            var selectedFromDate = fromDatePicker.Value;
+            UpdateToDateRange(selectedFromDate);
         }
 
         private void toDatePicker_ValueChanged(object sender, EventArgs e)

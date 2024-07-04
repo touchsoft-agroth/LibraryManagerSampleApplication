@@ -1,4 +1,4 @@
-﻿namespace LibraryManager.GUI.Dialogs
+﻿namespace LibraryManager.GUI.Dialogs.Borrowing
 {
     partial class BorrowBookDialog
     {

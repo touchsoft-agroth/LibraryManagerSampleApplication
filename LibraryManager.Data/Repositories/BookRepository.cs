@@ -4,8 +4,6 @@ namespace LibraryManager.Data.Repositories;
 
 public class BookRepository
 {
-    private static int _nextId;
-    
     private readonly DataContext _context;
     
     public BookRepository(DataContext context)
@@ -25,11 +23,6 @@ public class BookRepository
 
     public void Add(Book book)
     {
-        if (book.Id == -1)
-        {
-            book.Id = _nextId++;
-        }
-        
         _context.Books.Add(book);
     }
 }

@@ -19,7 +19,6 @@ public class BorrowedBookRepository
     public void Add(BorrowedBook borrowedBook)
     {
         _context.BorrowedBooks.Add(borrowedBook);
-        Console.WriteLine(_context.BorrowedBooks.Count);
     }
 
     public void Remove(BorrowedBook borrowedBook)
