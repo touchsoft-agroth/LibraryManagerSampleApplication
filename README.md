@@ -11,7 +11,7 @@ and allows users to borrow and return books that is currently in the library. Th
 You are free to use any tools, libraries or other resources for the tasks. There are no limitations or restrictions on technologies, patterns or implementation. After submission, you are expected to
 talk about and discuss your code and choices.
 
-FYI: While there are some windows forms that requires visual studio's designer to modify, none of the tasks should require any changes to the GUI.
+FYI: While there are some windows forms that requires visual studio's designer to modify, none of the tasks should require any changes to the GUI via the winforms designer.
 
 ## Tasks
 ### Improve the search functionality
