@@ -15,12 +15,20 @@ FYI: While there are some windows forms that requires visual studio's designer t
 
 ## Tasks
 ### Improve the search functionality
-* Currently a search on books by their titles is performed each time the search text box changes. Instead, we would like to only perform the search once
-the user has not changed the text for more than a configurable amount of milliseconds to avoid searching while the user is actively typing.
-* Implement a fuzzy search algorithm to allow partial matching of search results to make the search functionality less strict with spelling. Results should
+Implement a fuzzy search algorithm to allow partial matching of search results to make the search functionality less strict with spelling. Results should
 be ordered by similarity to the search term. This can either be implemented manually or make use of a 3rd party library like [FuzzySharp](https://www.nuget.org/packages/FuzzySharp).
 
 ### Introduce a max amount of actively borrowed books per user
-* There is currently no restriction on how many books that a single user can borrow at the same time. There should be an easily configurable amount of
-books that can be borrowed at the same time, and not allow users to  borrow books if they exceed this limit. You do not have to be concerned with showing any tooltips/labels if a user exceeds this limit,
-but the borrow button should not be clickable if the amount is exceeded.
+Users are currently allowed to borrow any amount of books without restrictions. You should implement an easily configurable amount of concurrent books the user is able to borrow at any time.
+The "Borrow" button in the borrowing dialog GUI should be disabled if the selected user has reached this limitation, and only enable it again once the user has less concurrent borrowed books. Other users should
+still be able to borrow books.
+
+### Logging of borrowing to output file
+Whenever a user either borrows or returns a book, we want to log this event into a local log text file on the client's machine. The log file should be located inside of the AppData/Roaming/LibraryManager directory on the machine.
+New events should be appended to the end of the file without overriding existing logged events. If the directory, or the log file does not exist, it should automatically be created.
+
+The logged events should include:
+* Current time
+* What type of event it was? Borrowed? Returned?
+* The related book
+* The user doing the operation
